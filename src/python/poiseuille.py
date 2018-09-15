@@ -26,7 +26,7 @@ stopTime  = 2.0
 timeStep  = 0.1
 
 # Override with command line arguments if need be
-print sys.argv
+#print(sys.argv)
 if len(sys.argv) > 1:
     if len(sys.argv) > 9:
         sys.exit('Error: too many arguments - currently only accepting 8 options: numberOfSquareElements numberOfArmElements numberOfLengthElements Re maxInletFlow startTime stopTime timeStep')        
