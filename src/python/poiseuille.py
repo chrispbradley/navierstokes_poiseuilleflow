@@ -124,7 +124,8 @@ fluidPressureBasisUserNumber = 2
 fluidMeshUserNumber = 1
   
 fluidDecompositionUserNumber = 1
-  
+fluidDecomposerUserNumber = 1
+ 
 fluidGeometricFieldUserNumber = 1
 fluidEquationsSetFieldUserNumber = 2
 fluidDependentFieldUserNumber = 3
@@ -158,8 +159,11 @@ iron.Context.RandomSeedsSet(randomSeeds)
 # Get the computational nodes info
 computationEnvironment = iron.ComputationEnvironment()
 iron.Context.ComputationEnvironmentGet(computationEnvironment)
-numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
-computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
+
+worldWorkGroup = iron.WorkGroup()
+computationEnvironment.WorldWorkGroupGet(worldWorkGroup)
+numberOfComputationalNodes = worldWorkGroup.NumberOfGroupNodesGet()
+computationalNodeNumber = worldWorkGroup.GroupNodeNumberGet()
 
 #================================================================================================================================
 #  Coordinate Systems
@@ -650,13 +654,27 @@ if (progressDiagnostics):
 # Create a decomposition for the fluid mesh
 fluidDecomposition = iron.Decomposition()
 fluidDecomposition.CreateStart(fluidDecompositionUserNumber,fluidMesh)
-fluidDecomposition.TypeSet(iron.DecompositionTypes.CALCULATED)
-fluidDecomposition.NumberOfDomainsSet(numberOfComputationalNodes)
 fluidDecomposition.CalculateFacesSet(True)
 fluidDecomposition.CreateFinish()
 
 if (progressDiagnostics):
     print('Decomposition ... Done')
+    
+#================================================================================================================================
+#  Decomposer
+#================================================================================================================================
+
+if (progressDiagnostics):
+    print('Decomposer ...')
+
+# Decompose 
+decomposer = iron.Decomposer()
+decomposer.CreateStart(fuidDecomposerUserNumber,worldRegion,worldWorkGroup)
+decompositionIndex = decomposer.DecompositionAdd(fluidDecomposition)
+decomposer.CreateFinish()
+
+if (progressDiagnostics):
+    print('Decomposer ... Done')
     
 #================================================================================================================================
 #  Geometric Field
