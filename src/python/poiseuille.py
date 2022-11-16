@@ -22,7 +22,8 @@ Re = 1000
 maxInletFlow = 1.0
 # Time stepping parameters
 startTime = 0.0
-stopTime  = 2.0
+#stopTime  = 2.0
+stopTime  = 0.1
 timeStep  = 0.1
 
 # Override with command line arguments if need be
@@ -72,21 +73,21 @@ RBS = True
 outputFrequency = 1 # Result output frequency
 
 # Output flags
-fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.NONE
-#fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.PROGRESS
+#fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.NONE
+fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.PROGRESS
 fluidEquationsOutputType = iron.EquationsOutputTypes.NONE
 #fluidEquationsOutputType = iron.EquationsOutputTypes.TIMING
 #fluidEquationsOutputType = iron.EquationsOutputTypes.MATRIX
-#fluidEquationsOutputType = iron.EquationsOutputTypes.ELEMENT_MATRIX
+fluidEquationsOutputType = iron.EquationsOutputTypes.ELEMENT_MATRIX
 fluidDynamicSolverOutputType = iron.SolverOutputTypes.NONE
 #fluidDynamicSolverOutputType = iron.SolverOutputTypes.PROGRESS
-#fluidDynamicSolverOutputType = iron.SolverOutputTypes.MATRIX
+fluidDynamicSolverOutputType = iron.SolverOutputTypes.MATRIX
 #fluidNonlinearSolverOutputType = iron.SolverOutputTypes.NONE
 fluidNonlinearSolverOutputType = iron.SolverOutputTypes.MONITOR
-#fluidNonlinearSolverOutputType = iron.SolverOutputTypes.MATRIX
+fluidNonlinearSolverOutputType = iron.SolverOutputTypes.MATRIX
 fluidLinearSolverOutputType = iron.SolverOutputTypes.NONE
 #fluidLinearSolverOutputType = iron.SolverOutputTypes.PROGRESS
-#fluidLinearSolverOutputType = iron.SolverOutputTypes.MATRIX
+fluidLinearSolverOutputType = iron.SolverOutputTypes.MATRIX
 
 # Set solver parameters
 fluidDynamicSolverTheta    = [0.5]
@@ -113,6 +114,8 @@ if numberOfLengthElements == 0:
     numberOfDimensions = 2
 else:
     numberOfDimensions = 3
+
+contextUserNumber = 1
 
 fluidCoordinateSystemUserNumber = 1
   
@@ -146,19 +149,22 @@ fluidProblemUserNumber = 1
 #  Initialise OpenCMISS
 #================================================================================================================================
 
+context = iron.Context()
+context.Create(contextUserNumber)
+
 worldRegion = iron.Region()
-iron.Context.WorldRegionGet(worldRegion)
+context.WorldRegionGet(worldRegion)
 
 # Set the OpenCMISS random seed so that we can test this example by using the
 # same parallel decomposition
-numberOfRandomSeeds = iron.Context.RandomSeedsSizeGet()
+numberOfRandomSeeds = context.RandomSeedsSizeGet()
 randomSeeds = [0]*numberOfRandomSeeds
 randomSeeds[0] = 100
-iron.Context.RandomSeedsSet(randomSeeds)
+context.RandomSeedsSet(randomSeeds)
 
 # Get the computational nodes info
 computationEnvironment = iron.ComputationEnvironment()
-iron.Context.ComputationEnvironmentGet(computationEnvironment)
+context.ComputationEnvironmentGet(computationEnvironment)
 
 worldWorkGroup = iron.WorkGroup()
 computationEnvironment.WorldWorkGroupGet(worldWorkGroup)
@@ -175,7 +181,7 @@ if (progressDiagnostics):
 
 # Create a RC coordinate system for the fluid region
 fluidCoordinateSystem = iron.CoordinateSystem()
-fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,iron.Context)
+fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,context)
 fluidCoordinateSystem.DimensionSet(numberOfDimensions)
 fluidCoordinateSystem.CreateFinish()
 
@@ -210,7 +216,7 @@ numberOfNodesXi = fluidVelocityInterpolation+1
 numberOfGaussXi = fluidVelocityInterpolation+1
 
 fluidVelocityBasis = iron.Basis()
-fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber,iron.Context)
+fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber,context)
 fluidVelocityBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 fluidVelocityBasis.numberOfXi = numberOfDimensions
 if (fluidVelocityInterpolation == LINEAR):
@@ -224,7 +230,7 @@ fluidVelocityBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*numberOfDimensi
 fluidVelocityBasis.CreateFinish()
 
 fluidPressureBasis = iron.Basis()
-fluidPressureBasis.CreateStart(fluidPressureBasisUserNumber,iron.Context)
+fluidPressureBasis.CreateStart(fluidPressureBasisUserNumber,context)
 fluidPressureBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 fluidPressureBasis.numberOfXi = numberOfDimensions
 fluidPressureBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
@@ -1041,7 +1047,7 @@ else:
     fluidProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
                                  iron.ProblemTypes.NAVIER_STOKES_EQUATION,
                                  iron.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
-fluidProblem.CreateStart(fluidProblemUserNumber,iron.Context,fluidProblemSpecification)
+fluidProblem.CreateStart(fluidProblemUserNumber,context,fluidProblemSpecification)
 fluidProblem.CreateFinish()
 
 if (progressDiagnostics):
