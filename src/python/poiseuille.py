@@ -149,6 +149,8 @@ fluidProblemUserNumber = 1
 #  Initialise OpenCMISS
 #================================================================================================================================
 
+quit()
+
 context = iron.Context()
 context.Create(contextUserNumber)
 
