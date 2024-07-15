@@ -10,7 +10,7 @@
 
 # Import the libraries (OpenCMISS,python,numpy,scipy)
 import math,numpy,csv,time,sys,os,pdb
-from opencmiss.iron import iron
+from opencmiss.opencmiss import OpenCMISS_Python as oc
 
 # Set the number of elements in the mesh
 numberOfSquareElements = 2
@@ -73,21 +73,21 @@ RBS = True
 outputFrequency = 1 # Result output frequency
 
 # Output flags
-#fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.NONE
-fluidEquationsSetOutputType = iron.EquationsSetOutputTypes.PROGRESS
-fluidEquationsOutputType = iron.EquationsOutputTypes.NONE
-#fluidEquationsOutputType = iron.EquationsOutputTypes.TIMING
-#fluidEquationsOutputType = iron.EquationsOutputTypes.MATRIX
-fluidEquationsOutputType = iron.EquationsOutputTypes.ELEMENT_MATRIX
-fluidDynamicSolverOutputType = iron.SolverOutputTypes.NONE
-#fluidDynamicSolverOutputType = iron.SolverOutputTypes.PROGRESS
-fluidDynamicSolverOutputType = iron.SolverOutputTypes.MATRIX
-#fluidNonlinearSolverOutputType = iron.SolverOutputTypes.NONE
-fluidNonlinearSolverOutputType = iron.SolverOutputTypes.MONITOR
-fluidNonlinearSolverOutputType = iron.SolverOutputTypes.MATRIX
-fluidLinearSolverOutputType = iron.SolverOutputTypes.NONE
-#fluidLinearSolverOutputType = iron.SolverOutputTypes.PROGRESS
-fluidLinearSolverOutputType = iron.SolverOutputTypes.MATRIX
+#fluidEquationsSetOutputType = oc.EquationsSetOutputTypes.NONE
+fluidEquationsSetOutputType = oc.EquationsSetOutputTypes.PROGRESS
+fluidEquationsOutputType = oc.EquationsOutputTypes.NONE
+#fluidEquationsOutputType = oc.EquationsOutputTypes.TIMING
+#fluidEquationsOutputType = oc.EquationsOutputTypes.MATRIX
+fluidEquationsOutputType = oc.EquationsOutputTypes.ELEMENT_MATRIX
+fluidDynamicSolverOutputType = oc.SolverOutputTypes.NONE
+#fluidDynamicSolverOutputType = oc.SolverOutputTypes.PROGRESS
+fluidDynamicSolverOutputType = oc.SolverOutputTypes.MATRIX
+#fluidNonlinearSolverOutputType = oc.SolverOutputTypes.NONE
+fluidNonlinearSolverOutputType = oc.SolverOutputTypes.MONITOR
+fluidNonlinearSolverOutputType = oc.SolverOutputTypes.MATRIX
+fluidLinearSolverOutputType = oc.SolverOutputTypes.NONE
+#fluidLinearSolverOutputType = oc.SolverOutputTypes.PROGRESS
+fluidLinearSolverOutputType = oc.SolverOutputTypes.MATRIX
 
 # Set solver parameters
 fluidDynamicSolverTheta    = [0.5]
@@ -149,12 +149,12 @@ fluidProblemUserNumber = 1
 #  Initialise OpenCMISS
 #================================================================================================================================
 
-quit()
+#quit()
 
-context = iron.Context()
+context = oc.Context()
 context.Create(contextUserNumber)
 
-worldRegion = iron.Region()
+worldRegion = oc.Region()
 context.WorldRegionGet(worldRegion)
 
 # Set the OpenCMISS random seed so that we can test this example by using the
@@ -165,10 +165,10 @@ randomSeeds[0] = 100
 context.RandomSeedsSet(randomSeeds)
 
 # Get the computational nodes info
-computationEnvironment = iron.ComputationEnvironment()
+computationEnvironment = oc.ComputationEnvironment()
 context.ComputationEnvironmentGet(computationEnvironment)
 
-worldWorkGroup = iron.WorkGroup()
+worldWorkGroup = oc.WorkGroup()
 computationEnvironment.WorldWorkGroupGet(worldWorkGroup)
 numberOfComputationalNodes = worldWorkGroup.NumberOfGroupNodesGet()
 computationalNodeNumber = worldWorkGroup.GroupNodeNumberGet()
@@ -182,7 +182,7 @@ if (progressDiagnostics):
     print('Coordinate systems ...')
 
 # Create a RC coordinate system for the fluid region
-fluidCoordinateSystem = iron.CoordinateSystem()
+fluidCoordinateSystem = oc.CoordinateSystem()
 fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,context)
 fluidCoordinateSystem.DimensionSet(numberOfDimensions)
 fluidCoordinateSystem.CreateFinish()
@@ -198,7 +198,7 @@ if (progressDiagnostics):
     print('Regions ...')
 
 # Create a fluid region
-fluidRegion = iron.Region()
+fluidRegion = oc.Region()
 fluidRegion.CreateStart(fluidRegionUserNumber,worldRegion)
 fluidRegion.label = 'FluidRegion'
 fluidRegion.coordinateSystem = fluidCoordinateSystem
@@ -217,25 +217,25 @@ if (progressDiagnostics):
 numberOfNodesXi = fluidVelocityInterpolation+1
 numberOfGaussXi = fluidVelocityInterpolation+1
 
-fluidVelocityBasis = iron.Basis()
+fluidVelocityBasis = oc.Basis()
 fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber,context)
-fluidVelocityBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+fluidVelocityBasis.type = oc.BasisTypes.LAGRANGE_HERMITE_TP
 fluidVelocityBasis.numberOfXi = numberOfDimensions
 if (fluidVelocityInterpolation == LINEAR):
-    fluidVelocityBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
+    fluidVelocityBasis.interpolationXi = [oc.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
 elif (fluidVelocityInterpolation == QUADRATIC):
-    fluidVelocityBasis.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*numberOfDimensions
+    fluidVelocityBasis.interpolationXi = [oc.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*numberOfDimensions
 else:
     print('Invalid velocity interpolation')
     exit()
 fluidVelocityBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*numberOfDimensions
 fluidVelocityBasis.CreateFinish()
 
-fluidPressureBasis = iron.Basis()
+fluidPressureBasis = oc.Basis()
 fluidPressureBasis.CreateStart(fluidPressureBasisUserNumber,context)
-fluidPressureBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+fluidPressureBasis.type = oc.BasisTypes.LAGRANGE_HERMITE_TP
 fluidPressureBasis.numberOfXi = numberOfDimensions
-fluidPressureBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
+fluidPressureBasis.interpolationXi = [oc.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
 fluidPressureBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*numberOfDimensions
 fluidPressureBasis.CreateFinish()
 
@@ -284,18 +284,18 @@ if (debug):
     print('    numberOfFluidNodes: %d' % (numberOfFluidNodes))
     print('    numberOfFluidElements: %d' % (numberOfFluidElements))
         
-fluidNodes = iron.Nodes()
+fluidNodes = oc.Nodes()
 fluidNodes.CreateStart(fluidRegion,numberOfFluidNodes)
 fluidNodes.CreateFinish()
 
-fluidMesh = iron.Mesh()
+fluidMesh = oc.Mesh()
 fluidMesh.CreateStart(fluidMeshUserNumber,fluidRegion,numberOfDimensions)
 fluidMesh.NumberOfElementsSet(numberOfFluidElements)
 fluidMesh.NumberOfComponentsSet(2)
 
-fluidVelocityElements = iron.MeshElements()
+fluidVelocityElements = oc.MeshElements()
 fluidVelocityElements.CreateStart(fluidMesh,1,fluidVelocityBasis)
-fluidPressureElements = iron.MeshElements()
+fluidPressureElements = oc.MeshElements()
 fluidPressureElements.CreateStart(fluidMesh,2,fluidPressureBasis)
 
 if (debug):
@@ -660,7 +660,7 @@ if (progressDiagnostics):
     print('Decomposition ...')
     
 # Create a decomposition for the fluid mesh
-fluidDecomposition = iron.Decomposition()
+fluidDecomposition = oc.Decomposition()
 fluidDecomposition.CreateStart(fluidDecompositionUserNumber,fluidMesh)
 fluidDecomposition.CalculateFacesSet(True)
 fluidDecomposition.CreateFinish()
@@ -676,7 +676,7 @@ if (progressDiagnostics):
     print('Decomposer ...')
 
 # Decompose 
-decomposer = iron.Decomposer()
+decomposer = oc.Decomposer()
 decomposer.CreateStart(fluidDecomposerUserNumber,worldRegion,worldWorkGroup)
 decompositionIndex = decomposer.DecompositionAdd(fluidDecomposition)
 decomposer.CreateFinish()
@@ -692,18 +692,18 @@ if (progressDiagnostics):
     print('Geometric Field ...')
     
 # Start to create a default (geometric) field on the fluid region
-fluidGeometricField = iron.Field()
+fluidGeometricField = oc.Field()
 fluidGeometricField.CreateStart(fluidGeometricFieldUserNumber,fluidRegion)
 # Set the decomposition to use
 fluidGeometricField.DecompositionSet(fluidDecomposition)
 # Set the scaling to use
-fluidGeometricField.ScalingTypeSet(iron.FieldScalingTypes.NONE)
-fluidGeometricField.VariableLabelSet(iron.FieldVariableTypes.U,'FluidGeometry')
+fluidGeometricField.ScalingTypeSet(oc.FieldScalingTypes.NONE)
+fluidGeometricField.VariableLabelSet(oc.FieldVariableTypes.U,'FluidGeometry')
 # Set the domain to be used by the field components.
-fluidGeometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
-fluidGeometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
+fluidGeometricField.ComponentMeshComponentSet(oc.FieldVariableTypes.U,1,1)
+fluidGeometricField.ComponentMeshComponentSet(oc.FieldVariableTypes.U,2,1)
 if (numberOfDimensions == 3):
-    fluidGeometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,1)
+    fluidGeometricField.ComponentMeshComponentSet(oc.FieldVariableTypes.U,3,1)
 # Finish creating the second field
 fluidGeometricField.CreateFinish()
 
@@ -750,18 +750,18 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
                                  (numberOfArmElements*(numberOfNodesXi-1))+squareRadius
                         xPosition = radius*math.cos(theta)
                         yPosition = radius*math.sin(theta)
-                    fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
-                    fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
+                    fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                                 1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
+                    fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                                 1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
                     if (numberOfDimensions == 2):
                         if (debug):
                             print('      Node        %d:' % (nodeNumber))
                             print('         Position         = [ %.2f, %.2f ]' % (xPosition,yPosition))
                     else:
                         zPosition = (zNodeIdx-1)*lengthSize/(numberOfLengthElements*(numberOfNodesXi-1))
-                        fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                                     1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
+                        fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                                     1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
                         if (debug):
                             print('      Node        %d:' % (nodeNumber))
                             print('         Position         = [ %.2f, %.2f, %.2f ]' % (xPosition,yPosition,zPosition))
@@ -775,25 +775,25 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
             if (nodeDomain == computationalNodeNumber):
                 xPosition = (xNodeIdx-1)*squareSize/(numberOfSquareElements*(numberOfNodesXi-1))-squareSize/2.0
                 yPosition = (yNodeIdx-1)*squareSize/(numberOfSquareElements*(numberOfNodesXi-1))-squareSize/2.0
-                fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                             1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
-                fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                             1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
+                fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                             1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
+                fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                             1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
                 if (numberOfDimensions == 2):
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Position         = [ %.2f, %.2f ]' % (xPosition,yPosition))                                     
                 else:
                     zPosition = (zNodeIdx-1)*lengthSize/(numberOfLengthElements*(numberOfNodesXi-1))
-                    fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
+                    fluidGeometricField.ParameterSetUpdateNodeDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                                 1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Position         = [ %.2f, %.2f, %.2f ]' % (xPosition,yPosition,zPosition))
                         
 # Update fields            
-fluidGeometricField.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-fluidGeometricField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+fluidGeometricField.ParameterSetUpdateStart(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
+fluidGeometricField.ParameterSetUpdateFinish(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
 
 if (progressDiagnostics):
     print('Geometric Parameters ... Done')
@@ -806,16 +806,16 @@ if (progressDiagnostics):
     print('Equations Sets ...')
 
 # Create the equations set for the fluid region - Navier-Stokes
-fluidEquationsSetField = iron.Field()
-fluidEquationsSet = iron.EquationsSet()
+fluidEquationsSetField = oc.Field()
+fluidEquationsSet = oc.EquationsSet()
 if RBS:
-    fluidEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
-                                      iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-                                      iron.EquationsSetSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
+    fluidEquationsSetSpecification = [oc.EquationsSetClasses.FLUID_MECHANICS,
+                                      oc.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                                      oc.EquationsSetSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
 else:
-    fluidEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
-                                      iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-                                      iron.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES]
+    fluidEquationsSetSpecification = [oc.EquationsSetClasses.FLUID_MECHANICS,
+                                      oc.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                                      oc.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES]
 fluidEquationsSet.CreateStart(fluidEquationsSetUserNumber,fluidRegion,fluidGeometricField,
                               fluidEquationsSetSpecification,fluidEquationsSetFieldUserNumber,
                               fluidEquationsSetField)
@@ -824,14 +824,14 @@ fluidEquationsSet.CreateFinish()
 
 if RBS:
     # Set max CFL number (default 1.0)
-    fluidEquationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
-                                                       iron.FieldParameterSetTypes.VALUES,2,1.0E20)
+    fluidEquationsSetField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U1,
+                                                       oc.FieldParameterSetTypes.VALUES,2,1.0E20)
     # Set time increment (default 0.0)
-    fluidEquationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
-                                                       iron.FieldParameterSetTypes.VALUES,3,timeStep)
+    fluidEquationsSetField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U1,
+                                                       oc.FieldParameterSetTypes.VALUES,3,timeStep)
     # Set stabilisation type (default 1.0 = RBS)
-    fluidEquationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
-                                                       iron.FieldParameterSetTypes.VALUES,4,1.0)
+    fluidEquationsSetField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U1,
+                                                       oc.FieldParameterSetTypes.VALUES,4,1.0)
 
 if (progressDiagnostics):
     print('Equations Sets ... Done')
@@ -845,29 +845,29 @@ if (progressDiagnostics):
     print('Dependent Fields ...')
 
 # Create the equations set dependent field variables for dynamic Navier-Stokes
-fluidDependentField = iron.Field()
+fluidDependentField = oc.Field()
 fluidEquationsSet.DependentCreateStart(fluidDependentFieldUserNumber,fluidDependentField)
-fluidDependentField.VariableLabelSet(iron.FieldVariableTypes.U,'FluidDependent')
+fluidDependentField.VariableLabelSet(oc.FieldVariableTypes.U,'FluidDependent')
 # Set the mesh component to be used by the field components.
 for componentIdx in range(1,numberOfDimensions+1):
-    fluidDependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentIdx,1)
-    fluidDependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,componentIdx,1)
-fluidDependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,numberOfDimensions+1,2)
-fluidDependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,numberOfDimensions+1,2)
-# fluidDependentField.ComponentInterpolationSet(iron.FieldVariableTypes.U,numberOfDimensions+1,iron.FieldInterpolationTypes.NODE_BASED)
-# fluidDependentField.ComponentInterpolationSet(iron.FieldVariableTypes.DELUDELN,numberOfDimensions+1,iron.FieldInterpolationTypes.NODE_BASED)
+    fluidDependentField.ComponentMeshComponentSet(oc.FieldVariableTypes.U,componentIdx,1)
+    fluidDependentField.ComponentMeshComponentSet(oc.FieldVariableTypes.DELUDELN,componentIdx,1)
+fluidDependentField.ComponentMeshComponentSet(oc.FieldVariableTypes.U,numberOfDimensions+1,2)
+fluidDependentField.ComponentMeshComponentSet(oc.FieldVariableTypes.DELUDELN,numberOfDimensions+1,2)
+# fluidDependentField.ComponentInterpolationSet(oc.FieldVariableTypes.U,numberOfDimensions+1,oc.FieldInterpolationTypes.NODE_BASED)
+# fluidDependentField.ComponentInterpolationSet(oc.FieldVariableTypes.DELUDELN,numberOfDimensions+1,oc.FieldInterpolationTypes.NODE_BASED)
 # Finish the equations set dependent field variables
 fluidEquationsSet.DependentCreateFinish()
 
 # Initialise the fluid dependent field
 for componentIdx in range(1,numberOfDimensions+1):
-    fluidDependentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,componentIdx,0.0)
+    fluidDependentField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,componentIdx,0.0)
 # Initialise pressure component
-fluidDependentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+fluidDependentField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
                                                 numberOfDimensions+1,fluidPInit)
      
-fluidDependentField.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-fluidDependentField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+fluidDependentField.ParameterSetUpdateStart(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
+fluidDependentField.ParameterSetUpdateFinish(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
 
 if (progressDiagnostics):
     print('Dependent Fields ... Done')
@@ -880,12 +880,12 @@ if (progressDiagnostics):
     print('Materials Fields ...')
 
 # Create the equations set materials field variables for dynamic Navier-Stokes
-fluidMaterialsField = iron.Field()
+fluidMaterialsField = oc.Field()
 fluidEquationsSet.MaterialsCreateStart(fluidMaterialsFieldUserNumber,fluidMaterialsField)
 # Finish the equations set materials field variables
 fluidEquationsSet.MaterialsCreateFinish()
-fluidMaterialsField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,fluidDynamicViscosity)
-fluidMaterialsField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,fluidDensity)
+fluidMaterialsField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,1,fluidDynamicViscosity)
+fluidMaterialsField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,2,fluidDensity)
 
 if (progressDiagnostics):
     print('Materials Fields ... Done')
@@ -898,9 +898,9 @@ if (progressDiagnostics):
     print('Equations ...')
 
 # Fluid equations 
-fluidEquations = iron.Equations()
+fluidEquations = oc.Equations()
 fluidEquationsSet.EquationsCreateStart(fluidEquations)
-fluidEquations.sparsityType = iron.EquationsSparsityTypes.SPARSE
+fluidEquations.sparsityType = oc.EquationsSparsityTypes.SPARSE
 fluidEquations.outputType = fluidEquationsOutputType
 fluidEquationsSet.EquationsCreateFinish()
 
@@ -915,7 +915,7 @@ if (progressDiagnostics):
     print('CellML ...')
 
 # Create CellML equations for the temporal boundary conditions
-bcCellML = iron.CellML()
+bcCellML = oc.CellML()
 bcCellML.CreateStart(bcCellMLUserNumber,fluidRegion)
 bcCellMLIdx = bcCellML.ModelImport("input/poiseuilleinlet.cellml")
 bcCellML.VariableSetAsKnown(bcCellMLIdx,"main/pipeRadius")
@@ -934,36 +934,36 @@ bcCellML.CreateFinish()
 # Create CellML <--> OpenCMISS field maps
 bcCellML.FieldMapsCreateStart()
 # Map geometric field to x and y
-bcCellML.CreateFieldToCellMLMap(fluidGeometricField,iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES,
-	                        bcCellMLIdx,"main/x",iron.FieldParameterSetTypes.VALUES)
-bcCellML.CreateFieldToCellMLMap(fluidGeometricField,iron.FieldVariableTypes.U,2,iron.FieldParameterSetTypes.VALUES,
-	                        bcCellMLIdx,"main/y",iron.FieldParameterSetTypes.VALUES)
+bcCellML.CreateFieldToCellMLMap(fluidGeometricField,oc.FieldVariableTypes.U,1,oc.FieldParameterSetTypes.VALUES,
+	                        bcCellMLIdx,"main/x",oc.FieldParameterSetTypes.VALUES)
+bcCellML.CreateFieldToCellMLMap(fluidGeometricField,oc.FieldVariableTypes.U,2,oc.FieldParameterSetTypes.VALUES,
+	                        bcCellMLIdx,"main/y",oc.FieldParameterSetTypes.VALUES)
 # Map fluid velocity to ensure dependent field isn't cleared when the velocities are copied back
-bcCellML.CreateFieldToCellMLMap(fluidDependentField,iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES,
-	                        bcCellMLIdx,"main/inletx",iron.FieldParameterSetTypes.VALUES)
-bcCellML.CreateFieldToCellMLMap(fluidDependentField,iron.FieldVariableTypes.U,2,iron.FieldParameterSetTypes.VALUES,
-	                        bcCellMLIdx,"main/inlety",iron.FieldParameterSetTypes.VALUES)
+bcCellML.CreateFieldToCellMLMap(fluidDependentField,oc.FieldVariableTypes.U,1,oc.FieldParameterSetTypes.VALUES,
+	                        bcCellMLIdx,"main/inletx",oc.FieldParameterSetTypes.VALUES)
+bcCellML.CreateFieldToCellMLMap(fluidDependentField,oc.FieldVariableTypes.U,2,oc.FieldParameterSetTypes.VALUES,
+	                        bcCellMLIdx,"main/inlety",oc.FieldParameterSetTypes.VALUES)
 if (numberOfDimensions==3):
-    bcCellML.CreateFieldToCellMLMap(fluidDependentField,iron.FieldVariableTypes.U,3,iron.FieldParameterSetTypes.VALUES,
-	                            bcCellMLIdx,"main/inletz",iron.FieldParameterSetTypes.VALUES)
+    bcCellML.CreateFieldToCellMLMap(fluidDependentField,oc.FieldVariableTypes.U,3,oc.FieldParameterSetTypes.VALUES,
+	                            bcCellMLIdx,"main/inletz",oc.FieldParameterSetTypes.VALUES)
 # Map inletx, inlety and inletz to dependent field
-bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inletx",iron.FieldParameterSetTypes.VALUES,
-	                        fluidDependentField,iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
-bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inlety",iron.FieldParameterSetTypes.VALUES,
-	                        fluidDependentField,iron.FieldVariableTypes.U,2,iron.FieldParameterSetTypes.VALUES)
+bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inletx",oc.FieldParameterSetTypes.VALUES,
+	                        fluidDependentField,oc.FieldVariableTypes.U,1,oc.FieldParameterSetTypes.VALUES)
+bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inlety",oc.FieldParameterSetTypes.VALUES,
+	                        fluidDependentField,oc.FieldVariableTypes.U,2,oc.FieldParameterSetTypes.VALUES)
 if (numberOfDimensions==3):
-    bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inletz",iron.FieldParameterSetTypes.VALUES,
-                                    fluidDependentField,iron.FieldVariableTypes.U,3,iron.FieldParameterSetTypes.VALUES)
+    bcCellML.CreateCellMLToFieldMap(bcCellMLIdx,"main/inletz",oc.FieldParameterSetTypes.VALUES,
+                                    fluidDependentField,oc.FieldVariableTypes.U,3,oc.FieldParameterSetTypes.VALUES)
 bcCellML.FieldMapsCreateFinish()
 
 # Create the CellML models field
-bcCellMLModelsField = iron.Field()
+bcCellMLModelsField = oc.Field()
 bcCellML.ModelsFieldCreateStart(bcCellMLModelsFieldUserNumber,bcCellMLModelsField)
-bcCellMLModelsField.VariableLabelSet(iron.FieldVariableTypes.U,"BCModelMap")
+bcCellMLModelsField.VariableLabelSet(oc.FieldVariableTypes.U,"BCModelMap")
 bcCellML.ModelsFieldCreateFinish()
 
 # Only evaluate BC on inlet nodes
-bcCellMLModelsField.ComponentValuesInitialiseIntg(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,0)
+bcCellMLModelsField.ComponentValuesInitialiseIntg(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,1,0)
 if (debug):
     print('  CellML Boundary Conditions:')
     print('    Inlet Model Set:')
@@ -973,8 +973,8 @@ for blockIdx in range(1,5):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(yNodeIdx-1)*numberOfSquareElements*(numberOfNodesXi-1)
             nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
             if (nodeDomain == computationalNodeNumber):
-                bcCellMLModelsField.ParameterSetUpdateNodeIntg(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                               1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
+                bcCellMLModelsField.ParameterSetUpdateNodeIntg(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                               1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
                 if (debug):
                     print('      Node        %d:' % (nodeNumber))
 for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
@@ -982,51 +982,51 @@ for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
         nodeNumber = 4*numberOfNodesPerBlock+(xNodeIdx-1)+(yNodeIdx-2)*(numberOfSquareElements*(numberOfNodesXi-1)-1)
         nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
         if (nodeDomain == computationalNodeNumber):
-            bcCellMLModelsField.ParameterSetUpdateNodeIntg(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                           1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
+            bcCellMLModelsField.ParameterSetUpdateNodeIntg(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
+                                                           1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
             if (debug):
                 print('      Node        %d:' % (nodeNumber))
 
-bcCellMLModelsField.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-bcCellMLModelsField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+bcCellMLModelsField.ParameterSetUpdateStart(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
+bcCellMLModelsField.ParameterSetUpdateFinish(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES)
                 
 # Create the CellML state field
-bcCellMLStateField = iron.Field()
+bcCellMLStateField = oc.Field()
 bcCellML.StateFieldCreateStart(bcCellMLStateFieldUserNumber,bcCellMLStateField)
-bcCellMLStateField.VariableLabelSet(iron.FieldVariableTypes.U,"BCState")
+bcCellMLStateField.VariableLabelSet(oc.FieldVariableTypes.U,"BCState")
 bcCellML.StateFieldCreateFinish()
 
 # Create the CellML parameters field
-bcCellMLParametersField = iron.Field()
+bcCellMLParametersField = oc.Field()
 bcCellML.ParametersFieldCreateStart(bcCellMLParametersFieldUserNumber,bcCellMLParametersField)
-bcCellMLParametersField.VariableLabelSet(iron.FieldVariableTypes.U,"BCParameters")
+bcCellMLParametersField.VariableLabelSet(oc.FieldVariableTypes.U,"BCParameters")
 bcCellML.ParametersFieldCreateFinish()
 
 # Get the component numbers
-pipeRadiusComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/pipeRadius")
-lengthComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/length")
-dynamicViscosityComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/dynamicViscosity")
-AComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/A")
-BComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/B")
-CComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,iron.CellMLFieldTypes.PARAMETERS,"main/C")
+pipeRadiusComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/pipeRadius")
+lengthComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/length")
+dynamicViscosityComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/dynamicViscosity")
+AComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/A")
+BComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/B")
+CComponentNumber = bcCellML.FieldComponentGet(bcCellMLIdx,oc.CellMLFieldTypes.PARAMETERS,"main/C")
 # Set up the parameters field
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     pipeRadiusComponentNumber,pipeRadius)
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     lengthComponentNumber,lengthSize)
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     dynamicViscosityComponentNumber,fluidDynamicViscosity)
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     AComponentNumber,A)
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     BComponentNumber,B)
-bcCellMLParametersField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES, \
+bcCellMLParametersField.ComponentValuesInitialiseDP(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES, \
                                                     CComponentNumber,C)
 
 # Create the CELL intermediate field
-bcCellMLIntermediateField = iron.Field()
+bcCellMLIntermediateField = oc.Field()
 bcCellML.IntermediateFieldCreateStart(bcCellMLIntermediateFieldUserNumber,bcCellMLIntermediateField)
-bcCellMLIntermediateField.VariableLabelSet(iron.FieldVariableTypes.U,"BCIntermediate")
+bcCellMLIntermediateField.VariableLabelSet(oc.FieldVariableTypes.U,"BCIntermediate")
 bcCellML.IntermediateFieldCreateFinish()
 
 if (progressDiagnostics):
@@ -1040,15 +1040,15 @@ if (progressDiagnostics):
     print('Problems ...')
 
 # Create a fluid problem
-fluidProblem = iron.Problem()
+fluidProblem = oc.Problem()
 if RBS:
-    fluidProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
-                                 iron.ProblemTypes.NAVIER_STOKES_EQUATION,
-                                 iron.ProblemSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
+    fluidProblemSpecification = [oc.ProblemClasses.FLUID_MECHANICS,
+                                 oc.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                 oc.ProblemSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
 else:
-    fluidProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
-                                 iron.ProblemTypes.NAVIER_STOKES_EQUATION,
-                                 iron.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
+    fluidProblemSpecification = [oc.ProblemClasses.FLUID_MECHANICS,
+                                 oc.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                 oc.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
 fluidProblem.CreateStart(fluidProblemUserNumber,context,fluidProblemSpecification)
 fluidProblem.CreateFinish()
 
@@ -1063,9 +1063,9 @@ if (progressDiagnostics):
     print('Control Loops ...')
 
 # Create the fluid problem control loop
-fluidControlLoop = iron.ControlLoop()
+fluidControlLoop = oc.ControlLoop()
 fluidProblem.ControlLoopCreateStart()
-fluidProblem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],fluidControlLoop)
+fluidProblem.ControlLoopGet([oc.ControlLoopIdentifiers.NODE],fluidControlLoop)
 fluidControlLoop.LabelSet('TimeLoop')
 fluidControlLoop.TimesSet(startTime,stopTime,timeStep)
 fluidControlLoop.TimeOutputSet(outputFrequency)
@@ -1082,26 +1082,26 @@ if (progressDiagnostics):
     print('Solvers ...')
 
 # Create the problem solver
-bcCellMLEvaluationSolver = iron.Solver()
-fluidDynamicSolver = iron.Solver()
-fluidNonlinearSolver = iron.Solver()
-fluidLinearSolver = iron.Solver()
-movingMeshLinearSolver = iron.Solver()
+bcCellMLEvaluationSolver = oc.Solver()
+fluidDynamicSolver = oc.Solver()
+fluidNonlinearSolver = oc.Solver()
+fluidLinearSolver = oc.Solver()
+movingMeshLinearSolver = oc.Solver()
 
 fluidProblem.SolversCreateStart()
 # Solvers for a Navier Stokes problem
 # Get the BC CellML solver
-fluidProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,bcCellMLEvaluationSolver)
-bcCellMLEvaluationSolver.outputType = iron.SolverOutputTypes.PROGRESS
+fluidProblem.SolverGet([oc.ControlLoopIdentifiers.NODE],1,bcCellMLEvaluationSolver)
+bcCellMLEvaluationSolver.outputType = oc.SolverOutputTypes.PROGRESS
 # Get the dynamic solver
-fluidProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,fluidDynamicSolver)
+fluidProblem.SolverGet([oc.ControlLoopIdentifiers.NODE],2,fluidDynamicSolver)
 fluidDynamicSolver.OutputTypeSet(fluidDynamicSolverOutputType)
 fluidDynamicSolver.DynamicThetaSet(fluidDynamicSolverTheta)
 # Get the dynamic nonlinear solver
 fluidDynamicSolver.DynamicNonlinearSolverGet(fluidNonlinearSolver)
-fluidNonlinearSolver.NewtonLineSearchTypeSet(iron.NewtonLineSearchTypes.LINEAR)
-fluidNonlinearSolver.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
-#fluidNonlinearSolver.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.FD) #(.FD/EQUATIONS)
+fluidNonlinearSolver.NewtonLineSearchTypeSet(oc.NewtonLineSearchTypes.LINEAR)
+fluidNonlinearSolver.NewtonJacobianCalculationTypeSet(oc.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
+#fluidNonlinearSolver.NewtonJacobianCalculationTypeSet(oc.JacobianCalculationTypes.FD) #(.FD/EQUATIONS)
 fluidNonlinearSolver.NewtonMaximumFunctionEvaluationsSet(nonlinearMaxFunctionEvaluations)
 fluidNonlinearSolver.OutputTypeSet(fluidNonlinearSolverOutputType)
 fluidNonlinearSolver.NewtonAbsoluteToleranceSet(nonlinearAbsoluteTolerance)
@@ -1110,12 +1110,12 @@ fluidNonlinearSolver.NewtonRelativeToleranceSet(nonlinearRelativeTolerance)
 fluidNonlinearSolver.NewtonLineSearchAlphaSet(nonlinearLinesearchAlpha)
 # Get the dynamic nonlinear linear solver
 fluidNonlinearSolver.NewtonLinearSolverGet(fluidLinearSolver)
-#fluidLinearSolver.LinearTypeSet(iron.LinearSolverTypes.ITERATIVE)
+#fluidLinearSolver.LinearTypeSet(oc.LinearSolverTypes.ITERATIVE)
 #fluidLinearSolver.LinearIterativeMaximumIterationsSet(linearMaximumIterations)
 #fluidLinearSolver.LinearIterativeDivergenceToleranceSet(linearDivergenceTolerance)
 #fluidLinearSolver.LinearIterativeRelativeToleranceSet(linearRelativeTolerance)
 #fluidLinearSolver.LinearIterativeAbsoluteToleranceSet(linearAbsoluteTolerance)
-fluidLinearSolver.LinearTypeSet(iron.LinearSolverTypes.DIRECT)
+fluidLinearSolver.LinearTypeSet(oc.LinearSolverTypes.DIRECT)
 fluidLinearSolver.OutputTypeSet(fluidLinearSolverOutputType)
 # Finish the creation of the problem solver
 fluidProblem.SolversCreateFinish()
@@ -1131,7 +1131,7 @@ if (progressDiagnostics):
     print('CellML Equations ...')
 
 # Create CellML equations and add BC equations to the solver
-bcEquations = iron.CellMLEquations()
+bcEquations = oc.CellMLEquations()
 fluidProblem.CellMLEquationsCreateStart()
 bcCellMLEvaluationSolver.CellMLEquationsGet(bcEquations)
 bcEquationsIndex = bcEquations.CellMLAdd(bcCellML)
@@ -1150,9 +1150,9 @@ if (progressDiagnostics):
 # Start the creation of the fluid problem solver equations
 fluidProblem.SolverEquationsCreateStart()
 # Get the fluid dynamic solver equations
-fluidSolverEquations = iron.SolverEquations()
+fluidSolverEquations = oc.SolverEquations()
 fluidDynamicSolver.SolverEquationsGet(fluidSolverEquations)
-fluidSolverEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+fluidSolverEquations.sparsityType = oc.SolverEquationsSparsityTypes.SPARSE
 fluidEquationsSetIndex = fluidSolverEquations.EquationsSetAdd(fluidEquationsSet)
 # Finish the creation of the fluid problem solver equations
 fluidProblem.SolverEquationsCreateFinish()
@@ -1168,7 +1168,7 @@ if (progressDiagnostics):
     print('Boundary Conditions ...')
 
 # Start the creation of the fluid boundary conditions
-fluidBoundaryConditions = iron.BoundaryConditions()
+fluidBoundaryConditions = oc.BoundaryConditions()
 fluidSolverEquations.BoundaryConditionsCreateStart(fluidBoundaryConditions)
 
 if (debug):
@@ -1181,20 +1181,20 @@ for blockIdx in range(1,5):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(yNodeIdx-1)*numberOfSquareElements*(numberOfNodesXi-1)
             nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
             if (nodeDomain == computationalNodeNumber):
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,1,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,2,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,1,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,2,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
                 if (numberOfDimensions==2):
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Velocity         = [ %.2f, %.2f ]' % (inletVelocity,0.0))                 
                 else:
-                    fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                    iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                    nodeNumber,3,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                    fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                    oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                    nodeNumber,3,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Velocity         = [ %.2f, %.2f, %.2f ]' % (0.0,0.0,0.0))                 
@@ -1203,20 +1203,20 @@ for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
         nodeNumber = 4*numberOfNodesPerBlock+(xNodeIdx-1)+(yNodeIdx-2)*(numberOfSquareElements*(numberOfNodesXi-1)-1)
         nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
         if (nodeDomain == computationalNodeNumber):
-            fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                            iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                            nodeNumber,1,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
-            fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                            iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                            nodeNumber,2,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
+            fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                            oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                            nodeNumber,1,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
+            fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                            oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                            nodeNumber,2,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
             if (numberOfDimensions==2):
                 if (debug):
                     print('      Node        %d:' % (nodeNumber))
                     print('         Velocity         = [ %.2f, %.2f ]' % (0.0,0.0))                 
             else:
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,3,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,3,oc.BoundaryConditionsTypes.FIXED_INLET,0.0)
                 if (debug):
                     print('      Node        %d:' % (nodeNumber))
                     print('         Velocity         = [ %.2f, %.2f, %.2f ]' % (0.0,0.0,0.0))                 
@@ -1229,20 +1229,20 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(zNodeIdx-1)*numberOfNodesPerLength
             nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
             if (nodeDomain == computationalNodeNumber):
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,1,iron.BoundaryConditionsTypes.FIXED,0.0)
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,2,iron.BoundaryConditionsTypes.FIXED,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,1,oc.BoundaryConditionsTypes.FIXED,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,2,oc.BoundaryConditionsTypes.FIXED,0.0)
                 if (numberOfDimensions==2):
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Velocity         = [ %.2f, %.2f ]' % (0.0,0.0))                 
                 else:
-                    fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                    iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                    nodeNumber,3,iron.BoundaryConditionsTypes.FIXED,0.0)
+                    fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                    oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                    nodeNumber,3,oc.BoundaryConditionsTypes.FIXED,0.0)
                     if (debug):
                         print('      Node        %d:' % (nodeNumber))
                         print('         Velocity         = [ %.2f, %.2f, %.2f ]' % (0.0,0.0,0.0))                 
@@ -1257,9 +1257,9 @@ for blockIdx in range(1,5):
                          numberOfLengthElements*(numberOfNodesXi-1)*numberOfNodesPerLength
             nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,2)
             if (nodeDomain == computationalNodeNumber):
-                fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                                nodeNumber,numberOfDimensions+1,iron.BoundaryConditionsTypes.FIXED,0.0)
+                fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                                oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                                nodeNumber,numberOfDimensions+1,oc.BoundaryConditionsTypes.FIXED,0.0)
                 if (debug):
                     print('      Node        %d:' % (nodeNumber))
                     print('         Pressure         = %.2f' % (0.0))                 
@@ -1270,9 +1270,9 @@ for yElementIdx in range(1,numberOfSquareElements):
                      numberOfLengthElements*(numberOfNodesXi-1)*numberOfNodesPerLength
         nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,2)
         if (nodeDomain == computationalNodeNumber):
-            fluidBoundaryConditions.SetNode(fluidDependentField,iron.FieldVariableTypes.U,1, \
-                                            iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
-                                            nodeNumber,numberOfDimensions+1,iron.BoundaryConditionsTypes.FIXED,0.0)
+            fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
+                                            oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
+                                            nodeNumber,numberOfDimensions+1,oc.BoundaryConditionsTypes.FIXED,0.0)
             if (debug):
                 print('      Node        %d:' % (nodeNumber))
                 print('         Pressure         = %.2f' % (0.0))                 
@@ -1290,7 +1290,7 @@ if (progressDiagnostics):
 #quit()
 
 # Export results
-fields = iron.Fields()
+fields = oc.Fields()
 fields.CreateRegion(fluidRegion)
 fields.NodesExport("Poiseuille","FORTRAN")
 fields.ElementsExport("Poiseuille","FORTRAN")
