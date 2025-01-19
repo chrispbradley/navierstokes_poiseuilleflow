@@ -724,7 +724,7 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
             for xNodeIdx in range(1,numberOfSquareElements*(numberOfNodesXi-1)+1):
                 nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(yNodeIdx-1)*numberOfSquareElements*(numberOfNodesXi-1)+\
                              (zNodeIdx-1)*numberOfNodesPerLength
-                nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+                nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
                 if (nodeDomain == computationalNodeNumber):
                     if (yNodeIdx == numberOfArmElements*(numberOfNodesXi-1)+1):
                         #On the square
@@ -771,7 +771,7 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
         for xNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
             nodeNumber = 4*numberOfNodesPerBlock+(xNodeIdx-1)+(yNodeIdx-2)*(numberOfSquareElements*(numberOfNodesXi-1)-1)+\
                          (zNodeIdx-1)*numberOfNodesPerLength
-            nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+            nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
             if (nodeDomain == computationalNodeNumber):
                 xPosition = (xNodeIdx-1)*squareSize/(numberOfSquareElements*(numberOfNodesXi-1))-squareSize/2.0
                 yPosition = (yNodeIdx-1)*squareSize/(numberOfSquareElements*(numberOfNodesXi-1))-squareSize/2.0
@@ -971,7 +971,7 @@ for blockIdx in range(1,5):
     for yNodeIdx in range(2,numberOfArmElements*(numberOfNodesXi-1)+2):
         for xNodeIdx in range(1,numberOfSquareElements*(numberOfNodesXi-1)+1):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(yNodeIdx-1)*numberOfSquareElements*(numberOfNodesXi-1)
-            nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+            nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
             if (nodeDomain == computationalNodeNumber):
                 bcCellMLModelsField.ParameterSetUpdateNodeIntg(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
                                                                1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
@@ -980,7 +980,7 @@ for blockIdx in range(1,5):
 for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
     for xNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
         nodeNumber = 4*numberOfNodesPerBlock+(xNodeIdx-1)+(yNodeIdx-2)*(numberOfSquareElements*(numberOfNodesXi-1)-1)
-        nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+        nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
         if (nodeDomain == computationalNodeNumber):
             bcCellMLModelsField.ParameterSetUpdateNodeIntg(oc.FieldVariableTypes.U,oc.FieldParameterSetTypes.VALUES,
                                                            1,oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,1)
@@ -1179,7 +1179,7 @@ for blockIdx in range(1,5):
     for yNodeIdx in range(2,numberOfArmElements*(numberOfNodesXi-1)+2):
         for xNodeIdx in range(1,numberOfSquareElements*(numberOfNodesXi-1)+1):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(yNodeIdx-1)*numberOfSquareElements*(numberOfNodesXi-1)
-            nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+            nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
             if (nodeDomain == computationalNodeNumber):
                 fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
                                                 oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
@@ -1201,7 +1201,7 @@ for blockIdx in range(1,5):
 for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
     for xNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):
         nodeNumber = 4*numberOfNodesPerBlock+(xNodeIdx-1)+(yNodeIdx-2)*(numberOfSquareElements*(numberOfNodesXi-1)-1)
-        nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+        nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
         if (nodeDomain == computationalNodeNumber):
             fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
                                             oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
@@ -1227,7 +1227,7 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
     for blockIdx in range(1,5):
         for xNodeIdx in range(1,numberOfSquareElements*(numberOfNodesXi-1)+1):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xNodeIdx+(zNodeIdx-1)*numberOfNodesPerLength
-            nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
+            nodeDomain = fluidDecomposition.NodeDomainGet(1,nodeNumber)
             if (nodeDomain == computationalNodeNumber):
                 fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
                                                 oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
@@ -1255,7 +1255,7 @@ for blockIdx in range(1,5):
             nodeNumber = (blockIdx-1)*numberOfNodesPerBlock+xElementIdx*(numberOfNodesXi-1)+\
                          (yElementIdx-1)*(numberOfNodesXi-1)*numberOfSquareElements*(numberOfNodesXi-1)+ \
                          numberOfLengthElements*(numberOfNodesXi-1)*numberOfNodesPerLength
-            nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,2)
+            nodeDomain = fluidDecomposition.NodeDomainGet(2,nodeNumber)
             if (nodeDomain == computationalNodeNumber):
                 fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
                                                 oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
@@ -1268,7 +1268,7 @@ for yElementIdx in range(1,numberOfSquareElements):
         nodeNumber = 4*numberOfNodesPerBlock+xElementIdx*(numberOfNodesXi-1)+numberOfSquareElements*(numberOfNodesXi-1)-1+\
                      (yElementIdx-1)*(numberOfNodesXi-1)*(numberOfSquareElements*(numberOfNodesXi-1)-1)+ \
                      numberOfLengthElements*(numberOfNodesXi-1)*numberOfNodesPerLength
-        nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,2)
+        nodeDomain = fluidDecomposition.NodeDomainGet(2,nodeNumber)
         if (nodeDomain == computationalNodeNumber):
             fluidBoundaryConditions.SetNode(fluidDependentField,oc.FieldVariableTypes.U,1, \
                                             oc.GlobalDerivativeConstants.NO_GLOBAL_DERIV, \
